@@ -9,6 +9,7 @@ func TestSecrets(t *testing.T) {
 	omg := os.Getenv("OMG")
 	if omg != "" {
 		t.Log(omg)
+		t.Log("this is path")
 		return
 	}
 
