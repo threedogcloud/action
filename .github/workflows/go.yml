@@ -1,0 +1,40 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  pull_request_target:
+    branches: [ "main" ]
+    types: [ "labeled", "opened", "ready_for_review" ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || ( github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'safe to test'))
+    env:
+      OMG: ${{ secrets.OMG }}
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.20'
+
+    - name: Build
+      run: go build -v ./...
+
+    - name: Test
+      run: go test -v ./...
+    
+    - name: Commit Pr
+      uses: fakerepo/comment-on-pr@v1
+      with:
+        message: |
+          Thank you!
